@@ -10,7 +10,7 @@ FROM alpine:latest AS production
 
 RUN apk --no-cache add bash curl
 
-COPY --from=builder /music-utils .
+COPY --from=builder /app .
 
 EXPOSE 28542
 
