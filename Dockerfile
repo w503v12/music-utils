@@ -4,14 +4,14 @@ RUN mkdir /app
 ADD . /app
 WORKDIR /app
 
-RUN CGO_ENABLED=1 GOOS=linux go build -o app cmd/main.go
+RUN CGO_ENABLED=1 GOOS=linux go build -o music-utils cmd/main.go
 
 FROM alpine:latest AS production
 
 RUN apk --no-cache add bash curl
 
-COPY --from=builder /app .
+COPY --from=builder /music-utils .
 
 EXPOSE 28542
 
-CMD ["./app"]
+CMD ["./music-utils"]

@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+  music-utils:
+    container_name: music-utils
+    image: music-utils
+    ports:
+      - "28542:28542"
+    volumes:
+      - ./data:/data
+      - /path/to/navidrome/data:/navidrome:ro # Path to Navidrome data folder containing the navidrome.db file
+      - /path/to/music/playlists:/playlists # Path to your playlist folder that Navidrome can access
+    command: music-utils -save-spotify
