@@ -50,10 +50,10 @@ func main() {
 	}
 
 	// Flags
-	saveSpotifyFlag := flag.Bool("save-spotify", false, "Saves Spotify playlists to file")
-	toTidalFlag := flag.Bool("to-tidal", false, "Imports playlists to Tidal")
-	importNavidromeFlag := flag.Bool("import-navidrome", false, "Imports playlists to Navidrome")
-	saveTidalFlag := flag.Bool("save-tidal", false, "Saves Tidal playlists to file")
+	saveSpotifyFlag := flag.Bool("save-spotify", false, "Save Spotify playlists to files")
+	toTidalFlag := flag.Bool("to-tidal", false, "Imports Spotify playlists to Tidal")
+	importNavidromeFlag := flag.Bool("import-navidrome", false, "Generates Navidrome playlist files from Tidal using Navidrome's database")
+	saveTidalFlag := flag.Bool("save-tidal", false, "Save provided Tidal playlists to files")
 	flag.Parse()
 
 	if *saveSpotifyFlag {
