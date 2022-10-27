@@ -6,9 +6,9 @@ WORKDIR /app
 
 RUN CGO_ENABLED=1 GOOS=linux go build -o music-utils cmd/main.go
 
-FROM alpine:latest AS production
+FROM ubuntu:22.04 AS production
 
-RUN apk --no-cache add bash curl
+RUN apt update && apt install -y bash curl
 
 COPY --from=builder /app .
 
