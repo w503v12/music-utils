@@ -20,6 +20,12 @@ type MissingTrack struct {
 	Artists []spotifyPkg.SimpleArtist `json:"artists"`
 }
 
+type MissingTrackNavidrome struct {
+	Name    string         `json:"name"`
+	Album   string         `json:"album"`
+	Artists []tidal.Artist `json:"artists"`
+}
+
 func Initialize() error {
 
 	err := createFolderIfNotExists("/data/spotify")
@@ -31,6 +37,10 @@ func Initialize() error {
 		return err
 	}
 	err = createFolderIfNotExists("/data/tidal")
+	if err != nil {
+		return err
+	}
+	err = createFolderIfNotExists("/data/navidrome-missing")
 	if err != nil {
 		return err
 	}
@@ -262,6 +272,43 @@ func ReadTidalPlaylistsToSave() ([]string, error) {
 		playlists = playlists[:len(playlists)-1]
 	}
 	return playlists, nil
+}
+
+func ProcessMissingNavidromeTracks(missingTracks []tidal.Track, playlistName string) error {
+	// Convert to simpler track struct
+	var tracks []MissingTrackNavidrome
+	for _, track := range missingTracks {
+		newTrack := MissingTrackNavidrome{
+			Name:  track.Title,
+			Album: track.Album.Title,
+		}
+		for _, artist := range track.Artists {
+			newTrack.Artists = append(newTrack.Artists, artist)
+		}
+		tracks = append(tracks, newTrack)
+	}
+	err := WriteMissingNavidromeTracks(tracks, playlistName)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func WriteMissingNavidromeTracks(tracks []MissingTrackNavidrome, name string) error {
+	data, err := JSONMarshal(tracks)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Sanitize playlist name
+	playlistName := sanitize.BaseName(name)
+
+	err = WriteFile(fmt.Sprintf("/data/navidrome-missing/%s.json", playlistName), data)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return nil
 }
 
 // JSONMarshal is a wrapper for json.Marshal which does not escape unicode characters (&)

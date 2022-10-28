@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/rs/zerolog/pkgerrors"
@@ -216,7 +215,6 @@ func main() {
 		if err != nil {
 			log.Fatal().Msgf("Error initializing navidrome service: %w", err)
 		}
-		fmt.Println(navidromeService)
 		log.Info().Msg("Starting Navidrome import")
 		// Read Tidal playlist files
 		tidalPlaylists, err := file.ReadTidalPlaylists()
@@ -235,7 +233,7 @@ func main() {
 			// Loop tracks
 			var missingTracks []tidal.Track
 			for _, track := range tidalPlaylist.Tracks {
-				foundTrack, err := navidromeService.Db.FindTrack(track.Title, track.Artist.Name)
+				foundTrack, err := navidromeService.Db.FindTrack(track.Title, track.Album.Title, track.Artist.Name)
 				if err != nil {
 					log.Debug().Msgf("Error finding track %s: %w", track.Title, err)
 				}
@@ -251,7 +249,16 @@ func main() {
 					missingTracks = append(missingTracks, track)
 				}
 			}
-			log.Info().Msgf("Finished processing playlist %s - It has %d missing tracks", tidalPlaylist.Title, len(missingTracks))
+			// Missing tracks
+			if len(missingTracks) > 0 {
+				log.Info().Msgf("Found %d missing tracks", len(missingTracks))
+				err := file.ProcessMissingNavidromeTracks(missingTracks, tidalPlaylist.Title)
+				if err != nil {
+					log.Error().Msgf("Error processing missing tracks: %w", err)
+					return
+				}
+			}
+			log.Info().Msgf("Finished processing playlist %s", tidalPlaylist.Title)
 		}
 
 	}
