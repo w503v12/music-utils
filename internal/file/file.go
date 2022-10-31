@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/kennygrant/sanitize"
 	"github.com/rs/zerolog/log"
+	"github.com/zibbp/music-utils/internal/lidarr"
 	"github.com/zibbp/music-utils/internal/tidal"
 	"github.com/zmb3/spotify/v2"
 	spotifyPkg "github.com/zmb3/spotify/v2"
@@ -26,6 +27,11 @@ type MissingTrackNavidrome struct {
 	Artists []tidal.Artist `json:"artists"`
 }
 
+type MissingLidarrAlbum struct {
+	Name   string `json:"name"`
+	Artist string `json:"artist"`
+}
+
 func Initialize() error {
 
 	err := createFolderIfNotExists("/data/spotify")
@@ -41,6 +47,10 @@ func Initialize() error {
 		return err
 	}
 	err = createFolderIfNotExists("/data/navidrome-missing")
+	if err != nil {
+		return err
+	}
+	err = createFolderIfNotExists("/data/wanted")
 	if err != nil {
 		return err
 	}
@@ -308,6 +318,37 @@ func WriteMissingNavidromeTracks(tracks []MissingTrackNavidrome, name string) er
 		fmt.Println(err)
 	}
 
+	return nil
+}
+
+func WriteWantedLinks(links []string) error {
+	// Write array of strings to text file
+	data := strings.Join(links, "\n")
+	err := WriteFile("/data/wanted/tidal.txt", []byte(data))
+	if err != nil {
+		return fmt.Errorf("error writing wanted links file: %w", err)
+	}
+	return nil
+}
+
+func ProcessMissingLidarrAlbums(albums []lidarr.Record) error {
+	// Convert to a simpler struct
+	var missingLidarAlbums []MissingLidarrAlbum
+	for _, album := range albums {
+		newAlbum := MissingLidarrAlbum{
+			Name:   album.Title,
+			Artist: album.Artist.ArtistName,
+		}
+		missingLidarAlbums = append(missingLidarAlbums, newAlbum)
+	}
+	data, err := JSONMarshal(missingLidarAlbums)
+	if err != nil {
+		return fmt.Errorf("error marshalling missing lidarr albums: %w", err)
+	}
+	err = WriteFile("/data/wanted/missing-albums.json", data)
+	if err != nil {
+		return fmt.Errorf("error writing missing lidarr albums file: %w", err)
+	}
 	return nil
 }
 

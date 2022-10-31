@@ -13,6 +13,8 @@ Various utilities for my music setup.
         Generates Navidrome playlist files from Tidal using Navidrome's database
   -save-tidal
         Save provided Tidal playlists to files
+  -process-lidarr-wanted
+        Find wanted Lidarr albums on Tidal and save to file
 ```
 
 ## Setup

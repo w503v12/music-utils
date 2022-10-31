@@ -24,6 +24,10 @@ type Config struct {
 		AccessToken  string
 		RefreshToken string
 	}
+	Lidarr struct {
+		Host   string
+		APIKey string
+	}
 }
 
 func Initialize() error {
@@ -48,6 +52,8 @@ func Initialize() error {
 	viper.SetDefault("tidal.user_id", "")
 	viper.SetDefault("tidal.access_token", "")
 	viper.SetDefault("tidal.refresh_token", "")
+	viper.SetDefault("lidarr.host", "")
+	viper.SetDefault("lidarr.api_key", "")
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Info().Msg("Config file not found, creating...")

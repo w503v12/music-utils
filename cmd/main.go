@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/zibbp/music-utils/internal/config"
 	"github.com/zibbp/music-utils/internal/file"
+	"github.com/zibbp/music-utils/internal/lidarr"
 	"github.com/zibbp/music-utils/internal/navidrome"
 	"github.com/zibbp/music-utils/internal/spotify"
 	"github.com/zibbp/music-utils/internal/tidal"
@@ -53,6 +54,7 @@ func main() {
 	toTidalFlag := flag.Bool("to-tidal", false, "Imports Spotify playlists to Tidal")
 	importNavidromeFlag := flag.Bool("import-navidrome", false, "Generates Navidrome playlist files from Tidal using Navidrome's database")
 	saveTidalFlag := flag.Bool("save-tidal", false, "Save provided Tidal playlists to files")
+	processLidarrWanted := flag.Bool("process-lidarr-wanted", false, "Process Lidarr wanted albums")
 	flag.Parse()
 
 	if *saveSpotifyFlag {
@@ -261,5 +263,62 @@ func main() {
 			log.Info().Msgf("Finished processing playlist %s", tidalPlaylist.Title)
 		}
 
+	}
+
+	if *processLidarrWanted {
+		lidarrService, err := lidarr.InitializeService()
+		if err != nil {
+			log.Fatal().Msgf("Error initializing lidarr service: %w", err)
+		}
+		tidalService, err := tidal.InitializeService()
+		if err != nil {
+			log.Fatal().Msgf("Error initializing tidal service: %w", err)
+		}
+		wantedAlbums, err := lidarrService.GetWanted()
+		if err != nil {
+			log.Fatal().Msgf("Error getting wanted records: %w", err)
+		}
+		log.Info().Msgf("Found %d wanted albums", len(wantedAlbums))
+
+		var links []string
+		var missingAlbums []lidarr.Record
+		// Process each wanted album
+		for _, wantedAlbum := range wantedAlbums {
+			// Find album on Tidal
+			tidalAlbum, err := tidalService.FindAlbum(wantedAlbum.Title, wantedAlbum.Artist.ArtistName)
+			if err != nil {
+				log.Error().Msgf("Error finding album %s: %w", wantedAlbum.Title, err)
+				missingAlbums = append(missingAlbums, wantedAlbum)
+				continue
+			}
+			if len(tidalAlbum.Albums.Items) == 0 {
+				log.Error().Msgf("Could not find album %s", wantedAlbum.Title)
+				missingAlbums = append(missingAlbums, wantedAlbum)
+				continue
+			}
+			// Compare number of tracks
+			if tidalAlbum.Albums.Items[0].NumberOfTracks != wantedAlbum.Statistics.TrackCount {
+				log.Error().Msgf("Number of tracks for album %s does not match", wantedAlbum.Title)
+				missingAlbums = append(missingAlbums, wantedAlbum)
+				continue
+			}
+			links = append(links, tidalAlbum.Albums.Items[0].URL)
+		}
+		// Write links to file
+		err = file.WriteWantedLinks(links)
+		if err != nil {
+			log.Error().Msgf("Error writing wanted links to file: %w", err)
+			return
+		}
+		// Process missing albums
+		if len(missingAlbums) > 0 {
+			log.Info().Msgf("Found %d missing albums", len(missingAlbums))
+			err := file.ProcessMissingLidarrAlbums(missingAlbums)
+			if err != nil {
+				log.Error().Msgf("Error processing missing albums: %w", err)
+				return
+			}
+		}
+		log.Info().Msgf("Finished writing wanted links to file")
 	}
 }

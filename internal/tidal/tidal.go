@@ -105,6 +105,7 @@ type Track struct {
 	DateAdded            string      `json:"dateAdded"`
 	Index                int64       `json:"index"`
 	ItemUUID             string      `json:"itemUuid"`
+	NumberOfTracks       int64       `json:"numberOfTracks"`
 }
 
 type Album struct {
@@ -530,4 +531,54 @@ func (s *Service) AddTrackToPlaylist(playlistId string, trackId int64) error {
 	}
 
 	return nil
+}
+
+func (s *Service) FindAlbum(albumTitle, albumArtist string) (*TrackSearch, error) {
+	log.Debug().Msgf("Searching for album %s by %s", albumTitle, albumArtist)
+
+	// HTTP
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/search", apiURL), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set Headers
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", s.AccessToken))
+
+	// Set Query Params
+	q := url.Values{}
+	q.Add("countryCode", countryCode)
+	q.Add("limit", "20")
+	q.Add("query", fmt.Sprintf("%s %s", albumTitle, albumArtist))
+	q.Add("types", "ALBUMS")
+
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s", string(body))
+	}
+
+	var albumSearch *TrackSearch
+
+	err = json.Unmarshal(body, &albumSearch)
+	if err != nil {
+		return nil, err
+	}
+
+	return albumSearch, nil
 }
