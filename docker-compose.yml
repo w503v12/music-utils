@@ -2,7 +2,7 @@ version: '3.3'
 services:
   music-utils:
     container_name: music-utils
-    image: music-utils
+    image: ghcr.io/zibbp/music-utils:master
     ports:
       - "28542:28542"
     volumes:
