@@ -21,3 +21,7 @@ Various utilities for my music setup.
 
 1. Modify and run the `docker-compose.yml` file.
 2. Fill in your Spotify client ID and secret in `./data/config/config.json`.
+
+## Notes
+
+Attempting to find music between platforms proved to be quite difficult. Tidal does not have an ISRC endpoint leaving me to search track by Title - Artist or Title - Album which can fail due to slight differences in naming between platforms. Any tracks not found during any steps are saved to a file within the `data` directory. A majority of the time these tracks do exist but has a difference causing it to be not found.
