@@ -34,8 +34,7 @@ type Config struct {
 	}
 	Notification struct {
 		Webhook struct {
-			Enabled bool
-			URL     string
+			URL string
 		}
 	}
 }
@@ -64,7 +63,6 @@ func Initialize() error {
 	viper.SetDefault("tidal.refresh_token", "")
 	viper.SetDefault("lidarr.host", "")
 	viper.SetDefault("lidarr.api_key", "")
-	viper.SetDefault("notification.webhook.enabled", false)
 	viper.SetDefault("notification.webhook.url", "")
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
@@ -88,9 +86,6 @@ func Initialize() error {
 func refreshConfig(configPath string) {
 	if !viper.IsSet("notification.webhook.url") {
 		viper.Set("notification.webhook.url", "")
-	}
-	if !viper.IsSet("notification.webhook.enabled") {
-		viper.Set("notification.webhook.enabled", false)
 	}
 }
 

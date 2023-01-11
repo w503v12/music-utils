@@ -58,6 +58,7 @@ func main() {
 	importNavidromeFlag := flag.Bool("import-navidrome", false, "Generates Navidrome playlist files from Tidal using Navidrome's database")
 	saveTidalFlag := flag.Bool("save-tidal", false, "Save provided Tidal playlists to files")
 	processLidarrWanted := flag.Bool("process-lidarr-wanted", false, "Process Lidarr wanted albums")
+	notifyWebhook := flag.Bool("notify-webhook", false, "Send notification to webhook")
 	flag.Parse()
 
 	if *saveSpotifyFlag {
@@ -325,8 +326,8 @@ func main() {
 		log.Info().Msgf("Finished writing wanted links to file")
 	}
 
-	if viper.GetBool("notification.webhook.enabled") {
-		log.Info().Msg("Webhook notification enabled")
+	if *notifyWebhook {
+		log.Info().Msg("Sending webhook notification")
 		// Generate string of which falgs were set
 		var flags []string
 
