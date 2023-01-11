@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"fmt"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/rs/zerolog/pkgerrors"
@@ -10,6 +12,7 @@ import (
 	"github.com/zibbp/music-utils/internal/file"
 	"github.com/zibbp/music-utils/internal/lidarr"
 	"github.com/zibbp/music-utils/internal/navidrome"
+	"github.com/zibbp/music-utils/internal/notification"
 	"github.com/zibbp/music-utils/internal/spotify"
 	"github.com/zibbp/music-utils/internal/tidal"
 	"github.com/zibbp/music-utils/internal/utils"
@@ -321,4 +324,32 @@ func main() {
 		}
 		log.Info().Msgf("Finished writing wanted links to file")
 	}
+
+	if viper.GetBool("notification.webhook.enabled") {
+		log.Info().Msg("Webhook notification enabled")
+		// Generate string of which falgs were set
+		var flags []string
+
+		if *saveSpotifyFlag {
+			flags = append(flags, "saved Spotify playlists")
+		}
+		if *toTidalFlag {
+			flags = append(flags, "imported playlists to Tidal")
+		}
+		if *saveTidalFlag {
+			flags = append(flags, "saved Tidal playlists")
+		}
+		if *importNavidromeFlag {
+			flags = append(flags, "generated Navidrome playlist files")
+		}
+
+		if len(flags) > 0 {
+			notificationMessage := utils.JoinWithCommasAnd(flags)
+			err := notification.SendWebhook(fmt.Sprintf("Music-Utils %s.", notificationMessage))
+			if err != nil {
+				log.Error().Msgf("Error sending webhook notification: %w", err)
+			}
+		}
+	}
+
 }

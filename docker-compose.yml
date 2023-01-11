@@ -1,4 +1,4 @@
-version: '3.3'
+version: "3.3"
 services:
   music-utils:
     container_name: music-utils

@@ -2,11 +2,12 @@ package utils
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
+
 	"github.com/rs/zerolog/log"
 	"github.com/zibbp/music-utils/internal/tidal"
 	spotifyPkg "github.com/zmb3/spotify/v2"
-	"regexp"
-	"strings"
 )
 
 func SpotifyPlaylistOnTidal(a string, list []tidal.Playlist) (bool, int) {
@@ -148,4 +149,13 @@ func ExtractUUID(url string) string {
 	// Use regex to extract UUID from URL
 	re := regexp.MustCompile(`(?m)(?i)([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})`)
 	return re.FindString(url)
+}
+
+func JoinWithCommasAnd(items []string) string {
+	if len(items) <= 1 {
+		return strings.Join(items, "")
+	}
+	last := items[len(items)-1]
+	items = items[:len(items)-1]
+	return fmt.Sprintf("%s and %s", strings.Join(items, ", "), last)
 }
