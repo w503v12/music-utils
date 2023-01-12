@@ -60,6 +60,10 @@ func SpotifyToTidalSearch(tidalService *tidal.Service, track spotifyPkg.Playlist
 			} else {
 				// Begin the hell that is trying to match songs between platforms :(
 				// Compare first 4 characters of ISRC
+				if len(item.Isrc) < 4 || len(track.Track.ExternalIDs["isrc"]) < 4 || item.Isrc == "" || track.Track.ExternalIDs["isrc"] == "" {
+					log.Info().Msgf("ISRC code for track %s is invalid", track.Track.Name)
+					continue
+				}
 				c = strings.EqualFold(item.Isrc[:4], track.Track.ExternalIDs["isrc"][:4])
 				if c {
 					log.Debug().Msgf("Found matching track %s on Tidal", track.Track.Name)
