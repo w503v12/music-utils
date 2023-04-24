@@ -3,6 +3,7 @@ package spotify
 import (
 	"context"
 	"fmt"
+
 	"github.com/rs/zerolog/log"
 	"github.com/zibbp/music-utils/internal/file"
 	"github.com/zmb3/spotify/v2"
@@ -33,6 +34,11 @@ func (s *Service) SaveUserPlaylists() error {
 		fullPlaylist, err := s.GetPlaylist(playlist.ID)
 		if err != nil {
 			return fmt.Errorf("error getting playlist: %w", err)
+		}
+
+		if fullPlaylist.Name == "" {
+			log.Warn().Msgf("Skipping playlist: %s as it does not have a name", playlist.ID)
+			continue
 		}
 
 		// Fetch playlist tracks
