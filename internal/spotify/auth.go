@@ -3,12 +3,13 @@ package spotify
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"github.com/zmb3/spotify/v2"
 	spotifyauth "github.com/zmb3/spotify/v2/auth"
 	"golang.org/x/oauth2"
-	"net/http"
 )
 
 var (

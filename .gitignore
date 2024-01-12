@@ -99,3 +99,5 @@ navi
 playlists
 data
 .env
+docker-compose-private.yml
+test-structure/

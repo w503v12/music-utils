@@ -2,11 +2,23 @@ version: "3.3"
 services:
   music-utils:
     container_name: music-utils
-    image: ghcr.io/zibbp/music-utils:master
+    image: derrouter/music-utils:latest
+    environment:
+      - SPOTIFY_CLIENT_SECRET=
+      - SPOTIFY_CLIENT_ID=
+      - SPOTIFY_ACCESS_TOKEN=
+      - SPOTIFY_REFRESH_TOKEN=
+      - SPOTIFY_REDIRECT_URI=
+      - TIDAL_USER_ID=
+      - TIDAL_ACCESS_TOKEN=
+      - TIDAL_REFRESH_TOKEN=
+      - LIDARR_HOST_IP=
+      - LIDARR_API_KEY=
+      - NOTIFICATION_WEBHOOK_URL=
     ports:
       - "28542:28542"
     volumes:
-      - ./data:/data
-      - /path/to/navidrome/data:/navidrome:ro # Path to Navidrome data folder containing the navidrome.db file
-      - /path/to/music/playlists:/playlists # Path to your playlist folder that Navidrome can access
-    command: music-utils -save-spotify
+      - /path/to/music-utils-data/:/data
+      - /path/to/navidrome/folder/with/navidromeDB:/navidrome:ro # Path to Navidrome data folder containing the navidrome.db file
+      - /path/to/save/playlists/:/playlists # Path to your playlist folder that Navidrome can access
+    command: ./app -save-spotify

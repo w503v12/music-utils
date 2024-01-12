@@ -5,14 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/kennygrant/sanitize"
 	"github.com/rs/zerolog/log"
 	"github.com/zibbp/music-utils/internal/lidarr"
 	"github.com/zibbp/music-utils/internal/tidal"
 	"github.com/zmb3/spotify/v2"
 	spotifyPkg "github.com/zmb3/spotify/v2"
-	"os"
-	"strings"
 )
 
 type MissingTrack struct {
@@ -34,23 +35,23 @@ type MissingLidarrAlbum struct {
 
 func Initialize() error {
 
-	err := createFolderIfNotExists("/data/spotify")
+	err := createFolderIfNotExists("./data/spotify")
 	if err != nil {
 		return err
 	}
-	err = createFolderIfNotExists("/data/missing")
+	err = createFolderIfNotExists("./data/missing")
 	if err != nil {
 		return err
 	}
-	err = createFolderIfNotExists("/data/tidal")
+	err = createFolderIfNotExists("./data/tidal")
 	if err != nil {
 		return err
 	}
-	err = createFolderIfNotExists("/data/navidrome-missing")
+	err = createFolderIfNotExists("./data/navidrome-missing")
 	if err != nil {
 		return err
 	}
-	err = createFolderIfNotExists("/data/wanted")
+	err = createFolderIfNotExists("./data/wanted")
 	if err != nil {
 		return err
 	}

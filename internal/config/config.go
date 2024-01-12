@@ -65,6 +65,18 @@ func Initialize() error {
 	viper.SetDefault("lidarr.api_key", "")
 	viper.SetDefault("notification.webhook.url", "")
 
+	viper.BindEnv("spotify.client_id", "SPOTIFY_CLIENT_ID")
+	viper.BindEnv("spotify.client_secret", "SPOTIFY_CLIENT_SECRET")
+	//viper.BindEnv("spotify.access_token", "SPOTIFY_CLIENT_SECRET")
+	//viper.BindEnv("spotify.refresh_token", "SPOTIFY_CLIENT_SECRET")
+	viper.BindEnv("spotify.redirect_uri", "SPOTIFY_REDIRECT_URI")
+	viper.BindEnv("tidal.user_id", "TIDAL_USER_ID")
+	viper.BindEnv("tidal.access_token", "TIDAL_ACCESS_TOKEN")
+	//viper.BindEnv("tidal.refresh_token", "TIDAL_REFRESH_TOKEN")
+	viper.BindEnv("lidarr.host", "LIDARR_HOST_IP")
+	viper.BindEnv("lidarr.api_key", "LIDARR_API_KEY")
+	viper.BindEnv("notification.webhook.url", "NOTIFICATION_WEBHOOK_URL")
+
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Info().Msg("Config file not found, creating...")
 		err := os.MkdirAll(configLocation, 0755)
