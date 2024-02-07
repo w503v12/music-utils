@@ -1,6 +1,7 @@
 # Music-Utils
 
-Various utilities for my music setup.
+Original Repo and work done by https://github.com/Zibbp/music-utils.
+Just fixed the Dockerfile and updated everything to current versions.
 
 ## Usage
 
@@ -19,9 +20,9 @@ Various utilities for my music setup.
 
 ## Setup
 
-1. Modify and run the `docker-compose.yml` file.
+1. Modify the `docker-compose.yml` file.
 2. Fill in the needed keys into the docker-compose file. CARE: don´t use any quotation marks for the keys, just the blank strings.
-3. Edit the `docker-compose.yml` with the commands you want to run.
+3. Edit the `docker-compose.yml` with the command you want to run.
 
 ## Notes
 
